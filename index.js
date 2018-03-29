@@ -47,6 +47,9 @@ async function main() {
 	let difficulty;
 	let target;
 
+	let job_id;
+	let ntime;
+
 	let nonce;
 	let block_header;
 
@@ -70,7 +73,19 @@ async function main() {
 		const hash = sha256(block_header);
 
 		if(lessThan(hash, target)) {
-			console.log("Mined Share");
+			(async () => {
+				console.log("Submitting share");
+
+				let result;
+
+				try {
+					result = await stratum.send("submit", username, job_id, extranonce2.toString("hex"), ntime, block_header.slice(block_header.length - 4).toString("hex"));
+				} catch(err) {
+					result = false;
+				}
+
+				console.log(result ? "Accepted share" : "Denied Share");
+			})();
 		}
 
 		hashes++;
@@ -114,16 +129,19 @@ async function main() {
 
 	stratum.on("mining.notify", (...args) => {
 		const [
-			job_id,
+			_job_id,
 			prevhash,
 			coinb1,
 			coinb2,
 			merkle_branch,
 			version,
 			nbits,
-			ntime,
+			_ntime,
 			clean_jobs
 		] = args;
+
+		job_id = _job_id;
+		ntime = _ntime;
 
 		const coinbase = Buffer.concat([
 			Buffer.from(coinb1, "hex"),
