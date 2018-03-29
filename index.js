@@ -1,6 +1,8 @@
+const url = require("url");
 const crypto = require("crypto");
 const BN = require("bn.js");
 const StratumClient = require("./lib/StratumClient");
+const argv = require("minimist")(process.argv.slice(2));
 
 function sha256(data) {
 	const hash = crypto.createHash("sha256");
@@ -32,7 +34,11 @@ function reverse(a) {
 }
 
 async function main() {
-	const stratum = new StratumClient(3333, "stratum.antpool.com");
+	const { hostname, port } = new url.URL(argv.o);
+	const username = argv.u;
+	const password = argv.p;
+
+	const stratum = new StratumClient(port, hostname);
 
 	let subscriptionDetails;
 	let extranonce1;
@@ -101,9 +107,9 @@ async function main() {
 		difficulty = _difficulty;
 
 		const maxTarget = new BN("00000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF", 16);
-
 		target = maxTarget.div(new BN(difficulty.toString(), 10)).toBuffer("be", 32);
-		console.log("target", target)
+
+		console.log("Received new difficulty:", difficulty);
 	});
 
 	stratum.on("mining.notify", (...args) => {
@@ -140,13 +146,15 @@ async function main() {
 
 		nonce = 0;
 
+		console.log("Received new work");
+
 		startMining();
 	});
 
 	[ subscriptionDetails, extranonce1, extranonce2_size ] = await stratum.send("mining.subscribe");
 	extranonce2 = crypto.randomBytes(extranonce2_size);
 
-	await stratum.send("mining.authorize", "montyanderson.pc", "");
+	await stratum.send("mining.authorize", username, password);
 }
 
 main().catch(e => console.log(e));
