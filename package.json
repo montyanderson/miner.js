@@ -1,0 +1,19 @@
+{
+  "name": "miner",
+  "version": "1.0.0",
+  "description": "Stratum Bitcoin miner implemented in Javascript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/montyanderson/miner.js.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/montyanderson/miner.js/issues"
+  },
+  "homepage": "https://github.com/montyanderson/miner.js#readme"
+}
