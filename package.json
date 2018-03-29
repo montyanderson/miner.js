@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/montyanderson/miner.js/issues"
   },
-  "homepage": "https://github.com/montyanderson/miner.js#readme"
+  "homepage": "https://github.com/montyanderson/miner.js#readme",
+  "dependencies": {
+    "bn.js": "^4.11.8"
+  }
 }
